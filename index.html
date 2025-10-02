@@ -295,7 +295,9 @@ bubbleCanvas.height = 320; // scale up bubbleCanvas height
                             const x = Math.max(-20, Math.min(20, gamma/45*20));
                             // Map beta [0,90] to [-10,10] px
                             const y = Math.max(-10, Math.min(10, (beta-45)/45*10));
-                            banner.style.transform = `translate(${x}px, ${y}px)`;
+                            // Map gamma [-90,90] to [-25,25] deg for rotation
+                            const rotate = Math.max(-25, Math.min(25, gamma/90*25));
+                            banner.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
                         }
                         if (window.DeviceOrientationEvent) {
                             window.addEventListener('deviceorientation', handleGyro);
