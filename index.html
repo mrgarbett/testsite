@@ -106,7 +106,8 @@
             <!-- Banner overlay, full width of card, with drop shadow -->
     <div id="banner" style="width:calc(100% + 120px); margin-left:-60px; height:260px; display:flex; align-items:center; justify-content:center; margin-top:var(--banner-margin-top); position:relative; border-radius:0; overflow:hidden; box-shadow:0 8px 32px 0 rgba(0,0,0,0.28); z-index:10;">
                 <canvas id="bubble-canvas" width="960" height="180" style="position:absolute; left:10%; top:0; width:80%; height:100%; pointer-events:none;"></canvas>
-    <div id="banner-content" style="width:100%; text-align:center; color:#111; font-size:10.2rem; font-weight:normal; font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; opacity:1; transition:opacity 0.7s; position:relative; z-index:1; line-height:210px;"></div>
+    <div id="banner-content-word" style="width:100%; text-align:center; color:#111; font-size:10.2rem; font-weight:normal; font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; opacity:1; transition:opacity 0.7s; position:absolute; z-index:1; line-height:210px; left:0; top:0;"></div>
+    <div id="banner-content-clock" style="width:100%; text-align:center; color:#111; font-size:10.2rem; font-weight:normal; font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; opacity:0; transition:opacity 0.7s; position:absolute; z-index:2; line-height:210px; left:0; top:0;"></div>
             </div>
             <!-- Banner controls -->
             <div id="banner-controls" style="position:absolute; left:0; right:0; top:calc(100% - 64px); width:100%; display:flex; justify-content:center; gap:12px; z-index:11; pointer-events:auto;">
@@ -188,7 +189,8 @@
 
                         // Banner logic
                         const banner = document.getElementById('banner');
-                        const bannerContent = document.getElementById('banner-content');
+                        const bannerContentWord = document.getElementById('banner-content-word');
+                        const bannerContentClock = document.getElementById('banner-content-clock');
                         const bannerColorInput = document.getElementById('banner-color');
                         const bannerWordInput = document.getElementById('banner-word');
                         let userWord = '';
@@ -198,9 +200,9 @@
                         function updateBannerContent() {
                             if (showTime) {
                                 const t = new Date();
-                                bannerContent.textContent = t.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                                bannerContentClock.textContent = t.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
                             } else {
-                                bannerContent.textContent = userWord || ' ';
+                                bannerContentWord.textContent = userWord || ' ';
                             }
                         }
 
@@ -296,27 +298,39 @@ bubbleCanvas.style.position = 'absolute';
 
                         // Crossfade logic
                         setInterval(() => {
-                            bannerContent.style.opacity = 0;
+                            const overlap = 150; // ms, reduced overlap
+                            const transition = 700; // ms, match CSS
+                            if (showTime) {
+                                bannerContentClock.style.opacity = 1;
+                                bannerContentWord.style.opacity = 1;
+                                setTimeout(() => {
+                                    bannerContentWord.style.opacity = 0;
+                                }, overlap);
+                            } else {
+                                bannerContentWord.style.opacity = 1;
+                                bannerContentClock.style.opacity = 1;
+                                setTimeout(() => {
+                                    bannerContentClock.style.opacity = 0;
+                                }, overlap);
+                            }
                             setTimeout(() => {
                                 showTime = !showTime;
                                 updateBannerContent();
-                                bannerContent.style.opacity = 1;
-                            }, 350);
+                            }, transition);
                         }, crossfadeInterval);
 
                         // Update time every second if showing time
                         setInterval(() => {
-                            if (showTime) updateBannerContent();
+                            if (showTime) {
+                                const t = new Date();
+                                bannerContentClock.textContent = t.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                            }
                         }, 1000);
 
                         bannerWordInput.addEventListener('input', e => {
                             userWord = e.target.value;
                             if (!showTime) {
-                                bannerContent.style.opacity = 0;
-                                setTimeout(() => {
-                                    updateBannerContent();
-                                    bannerContent.style.opacity = 1;
-                                }, 350);
+                                bannerContentWord.textContent = userWord || ' ';
                             }
                         });
 
