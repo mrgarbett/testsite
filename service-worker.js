@@ -6,6 +6,9 @@ self.addEventListener('install', event => {
         './index.html',
         './manifest.json',
         './ttfs/student.svg',
+        './ttfs/CircularStd-Book.ttf',
+        './ttfs/CircularStd-Bold.ttf',
+        './ttfs/CircularStd-Black.otf',
         // Add other assets as needed
       ]);
     })
