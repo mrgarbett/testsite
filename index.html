@@ -289,9 +289,8 @@ bubbleCanvas.height = 320; // scale up bubbleCanvas height
 
                         // Gyro effect
                         function handleGyro(event) {
-                            // Use gamma for left/right tilt, beta for up/down
-                            const gamma = event.gamma || 0;
-                            const beta = event.beta || 0;
+                            const gamma = event.gamma || 0; // left/right tilt
+                            const beta = event.beta || 0;  // up/down tilt
                             // Map gamma [-45,45] to [-20,20] px
                             const x = Math.max(-20, Math.min(20, gamma/45*20));
                             // Map beta [0,90] to [-10,10] px
