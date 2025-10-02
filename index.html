@@ -67,6 +67,21 @@
             padding: 0 24px 0 24px;
             font-family: inherit;
         }
+        .site-inputs {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            background: #fff;
+            box-shadow: 0 -2px 16px rgba(0,0,0,0.10);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 0 18px 0;
+            z-index: 100;
+        }
         .hello-input {
             font-size: 1.2rem;
             padding: 10px;
@@ -102,8 +117,8 @@
                 <canvas id="bubble-canvas" width="960" height="180" style="position:absolute; left:10%; top:0; width:80%; height:100%; pointer-events:none;"></canvas>
     <div id="banner-content" style="width:100%; text-align:center; color:#111; font-size:10.2rem; font-weight:normal; font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; opacity:1; transition:opacity 0.7s; position:relative; z-index:1; line-height:210px;"></div>
             </div>
-            <!-- Banner controls -->
-            <div id="banner-controls" style="position:absolute; left:0; right:0; top:calc(100% - 64px); width:100%; display:flex; justify-content:center; gap:12px; z-index:11; pointer-events:auto;">
+            <!-- Banner controls moved outside card -->
+            <div class="site-inputs">
                 <input id="banner-color" type="color" value="#e91e63" style="height:32px; width:32px; border:none; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
                 <input id="banner-word" type="text" placeholder="Enter word" style="font-size:1rem; padding:6px 10px; border-radius:6px; border:1px solid #ccc; width:120px; font-weight:bold;">
             </div>
@@ -111,13 +126,17 @@
     <div id="ticket-expiry" style="width:100%; text-align:center; font-size:3.2rem; color:#222; font-weight:normal; margin-top:var(--ticket-expiry-margin-top); font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;"></div>
         <!-- Squircle hash banner -->
     <div id="hash-banner" style="width:100%; height:72px; margin-top:var(--hash-banner-margin-top); display:flex; align-items:center; justify-content:center; background:#1a1a1a1a; color:#222; font-size:3.2rem; font-weight:normal; border-radius:100px; letter-spacing:0.04em; font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;"></div>
-        <!-- More details hyperlink -->
+            <!-- More details hyperlink -->
     <div style="width:100%; display:flex; justify-content:center; margin-top:var(--details-link-margin-top);">
     <a href="#" style="color:#16813d; font-size:3.2rem; font-weight:normal; font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; text-decoration:none;">More details &gt;</a>
         </div>
-        </div>
-        </div>
-        <script>
+    </div>
+    <!-- Card ends here, input fields are outside -->
+    <div class="site-inputs">
+        <input id="banner-color" type="color" value="#e91e63" style="height:32px; width:32px; border:none; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+        <input id="banner-word" type="text" placeholder="Enter word" style="font-size:1rem; padding:6px 10px; border-radius:6px; border:1px solid #ccc; width:120px; font-weight:bold;">
+    </div>
+    <script>
             // Variable to control QR code scale
             const qrScale = 1.5; // Change this value to scale the QR code (was 1.0)
             const baseSize = 480; // base size in px
