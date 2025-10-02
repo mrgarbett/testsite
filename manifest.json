@@ -1,7 +1,7 @@
 {
   "name": "Stagecoach Spoof",
   "short_name": "SpoofCard",
-  "start_url": "test.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#1976d2",
   "theme_color": "#1976d2",
