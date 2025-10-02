@@ -250,10 +250,14 @@ bubbleCanvas.style.position = 'absolute';
                             const maxRadius = 180;
                             const radius = Math.random() * (maxRadius - minRadius) + minRadius; // Bubbles range from 20px to 180px
                             const x = Math.random() * bubbleCanvas.width;
-                            const y = bubbleCanvas.height + radius;
-                            const speed = Math.random() * 3.2 + 2.2; // Even faster bubbles
+                            const y = Math.random() * bubbleCanvas.height;
+                            const speed = Math.random() * 2.5 + 1.2;
                             const alpha = Math.random() * 0.3 + 0.25;
-                            bubbles.push({x, y, radius, speed, alpha});
+                            // Random direction in radians
+                            const angle = Math.random() * 2 * Math.PI;
+                            const dx = Math.cos(angle) * speed;
+                            const dy = Math.sin(angle) * speed;
+                            bubbles.push({x, y, radius, dx, dy, alpha});
                         }
                         function animateBubbles() {
                             ctx.clearRect(0, 0, bubbleCanvas.width, bubbleCanvas.height);
@@ -262,11 +266,14 @@ bubbleCanvas.style.position = 'absolute';
                                 ctx.arc(b.x, b.y, b.radius, 0, 2 * Math.PI);
                                 ctx.fillStyle = `rgba(255,255,255,${b.alpha})`;
                                 ctx.fill();
-                                b.y -= b.speed;
-                                b.x += Math.sin(b.y/20) * 0.5;
+                                b.x += b.dx;
+                                b.y += b.dy;
                             });
                             // Remove bubbles that are out of view
-                            bubbles = bubbles.filter(b => b.y + b.radius > 0);
+                            bubbles = bubbles.filter(b =>
+                                b.x + b.radius > 0 && b.x - b.radius < bubbleCanvas.width &&
+                                b.y + b.radius > 0 && b.y - b.radius < bubbleCanvas.height
+                            );
                             // Spawn new bubbles randomly
                             if (Math.random() < 0.07) spawnBubble(); // Higher density
                             requestAnimationFrame(animateBubbles);
