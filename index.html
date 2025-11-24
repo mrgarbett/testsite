@@ -49,6 +49,13 @@
             --preset-color-4: #ff9800;
             --preset-color-5: #9c27b0;
             --preset-color-6: #03a9f4;
+            /* Preset color names: edit these to change the label shown in the dropdown */
+            --preset-name-1: Pink;
+            --preset-name-2: Blue;
+            --preset-name-3: Green;
+            --preset-name-4: Orange;
+            --preset-name-5: Purple;
+            --preset-name-6: Cyan;
         }
         body {
             margin: 0;
@@ -118,15 +125,9 @@
             </div>
             <!-- Banner controls -->
             <div id="banner-controls" style="position:absolute; left:0; right:0; top:calc(100% - 64px); width:100%; display:flex; justify-content:center; gap:12px; z-index:11; pointer-events:auto; align-items:center;">
-                <div id="preset-dropdown" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); display:inline-block;">
-                    <button id="preset-toggle" aria-haspopup="listbox" style="height:48px; border-radius:12px; padding:8px 12px; font-size:1.6rem; background:transparent; border:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; gap:8px; opacity:0;">
-                        <span id="preset-toggle-swatch" style="width:20px; height:20px; border-radius:4px; display:inline-block; background:transparent; border:1px solid rgba(0,0,0,0.06);"></span>
-                        <span id="preset-toggle-label">Presets</span>
-                        <span style="margin-left:6px; opacity:0.7;">▾</span>
-                    </button>
-                    <ul id="preset-list" style="position:absolute; left:0; top:56px; list-style:none; margin:0; padding:8px; background:#fff; box-shadow:0 6px 20px rgba(0,0,0,.12); border-radius:8px; display:none; z-index:50; min-width:180px;">
-                    </ul>
-                </div>
+                <select id="preset-colors" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); height:48px; border-radius:12px; padding:8px 12px; font-size:1.6rem; background:transparent; color:#111; border:1px solid rgba(0,0,0,0.08); opacity:0;">
+                    <option value="">Presets</option>
+                </select>
                 <input id="banner-color" type="color" value="#e91e63" style="height:48px; width:48px; border:none; border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,0.08); background:transparent; opacity:0;">
                 <input id="banner-word" type="text" placeholder="Enter word" style="font-size:2rem; padding:18px 20px; border-radius:12px; border:1px solid #ccc; width:220px; font-weight:bold; background:transparent; color:#222; opacity:0;">
             </div>
@@ -358,7 +359,7 @@ bubbleCanvas.style.position = 'absolute';
                         // Initial banner color
                         banner.style.background = bannerColorInput.value;
 
-                        // Preset colors dropdown wiring (custom dropdown with swatches)
+                        // Preset colors wiring using native <select>
                         (function setupPresets(){
                             const root = getComputedStyle(document.documentElement);
                             const presets = [
@@ -369,88 +370,42 @@ bubbleCanvas.style.position = 'absolute';
                                 root.getPropertyValue('--preset-color-5').trim() || '#9c27b0',
                                 root.getPropertyValue('--preset-color-6').trim() || '#03a9f4'
                             ];
+                            const names = [
+                                root.getPropertyValue('--preset-name-1').trim() || 'Pink',
+                                root.getPropertyValue('--preset-name-2').trim() || 'Blue',
+                                root.getPropertyValue('--preset-name-3').trim() || 'Green',
+                                root.getPropertyValue('--preset-name-4').trim() || 'Orange',
+                                root.getPropertyValue('--preset-name-5').trim() || 'Purple',
+                                root.getPropertyValue('--preset-name-6').trim() || 'Cyan'
+                            ];
 
-                            const dropdown = document.getElementById('preset-dropdown');
-                            const toggle = document.getElementById('preset-toggle');
-                            let list = document.getElementById('preset-list');
-                            const toggleSwatch = document.getElementById('preset-toggle-swatch');
-                            const toggleLabel = document.getElementById('preset-toggle-label');
-
-                            // populate list
+                            const select = document.getElementById('preset-colors');
+                            // populate select (leave first option as default)
                             presets.forEach((hex, i) => {
-                                const li = document.createElement('li');
-                                li.setAttribute('role','option');
-                                li.style.padding = '6px 8px';
-                                li.style.borderRadius = '6px';
-                                li.style.cursor = 'pointer';
-                                li.style.display = 'flex';
-                                li.style.alignItems = 'center';
-                                li.style.gap = '10px';
-                                li.style.marginBottom = '6px';
-                                const sw = document.createElement('span');
-                                sw.style.width = '22px';
-                                sw.style.height = '22px';
-                                sw.style.borderRadius = '6px';
-                                sw.style.display = 'inline-block';
-                                sw.style.background = hex;
-                                sw.style.border = '1px solid rgba(0,0,0,0.06)';
-                                const label = document.createElement('span');
-                                label.textContent = hex;
-                                label.style.fontSize = '1.6rem';
-                                li.appendChild(sw);
-                                li.appendChild(label);
-                                li.addEventListener('click', () => {
-                                    banner.style.background = hex;
-                                    bannerColorInput.value = hex;
-                                    // update toggle
-                                    toggleSwatch.style.background = hex;
-                                    toggleLabel.textContent = hex;
-                                    // persist selection
-                                    try { localStorage.setItem('presetColor', hex); } catch (err) {}
-                                    // close list
-                                    list.style.display = 'none';
-                                });
-                                list.appendChild(li);
+                                const opt = document.createElement('option');
+                                opt.value = hex;
+                                // Use the user-editable name if present, otherwise fall back to hex
+                                opt.textContent = names[i] || hex;
+                                select.appendChild(opt);
                             });
 
-                            // Move the list out to body to avoid being clipped by overflow:hidden on ancestors
-                            document.body.appendChild(list);
-                            list.style.display = 'none';
-                            list.style.position = 'absolute';
-                            list.style.minWidth = '180px';
-
-                            function positionList() {
-                                const rect = toggle.getBoundingClientRect();
-                                list.style.left = (rect.left + window.scrollX) + 'px';
-                                list.style.top = (rect.bottom + window.scrollY + 8) + 'px';
-                            }
-
-                            // toggle open/close
-                            toggle.addEventListener('click', (e) => {
-                                e.stopPropagation();
-                                if (list.style.display === 'block') {
-                                    list.style.display = 'none';
-                                } else {
-                                    positionList();
-                                    list.style.display = 'block';
+                            // when a preset is chosen, update the banner and color input and persist
+                            select.addEventListener('change', e => {
+                                const val = e.target.value;
+                                if (val) {
+                                    banner.style.background = val;
+                                    bannerColorInput.value = val;
+                                    try { localStorage.setItem('presetColor', val); } catch (err) {}
                                 }
                             });
 
-                            // click outside closes
-                            document.addEventListener('click', (e) => {
-                                if (!dropdown.contains(e.target) && !list.contains(e.target)) {
-                                    list.style.display = 'none';
-                                }
-                            });
-                            window.addEventListener('resize', () => { if (list.style.display === 'block') positionList(); });
-                            window.addEventListener('scroll', () => { if (list.style.display === 'block') positionList(); });
-
-                            // When color input changes manually, update banner and toggle label/swatch and persist
+                            // When color input changes manually, try to sync select and persist
                             bannerColorInput.addEventListener('input', e => {
                                 const val = e.target.value;
                                 banner.style.background = val;
-                                toggleSwatch.style.background = val;
-                                toggleLabel.textContent = val;
+                                const matchIdx = presets.indexOf(val);
+                                if (matchIdx >= 0) select.selectedIndex = matchIdx + 1; // +1 because of default option
+                                else select.selectedIndex = 0;
                                 try { localStorage.setItem('presetColor', val); } catch (err) {}
                             });
 
@@ -460,8 +415,8 @@ bubbleCanvas.style.position = 'absolute';
                                 if (saved) {
                                     banner.style.background = saved;
                                     bannerColorInput.value = saved;
-                                    toggleSwatch.style.background = saved;
-                                    toggleLabel.textContent = saved;
+                                    const matchIdx = presets.indexOf(saved);
+                                    if (matchIdx >= 0) select.selectedIndex = matchIdx + 1;
                                 }
                             } catch (err) {}
 
