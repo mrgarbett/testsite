@@ -108,7 +108,7 @@
                                     <img src="ttfs/student.svg" alt="Student Icon" style="width:88px; height:88px; filter:invert(1) brightness(2);">
                                 </div>
                                 <input type="text" value="Rodrigo Macias" style="color:#fff; font-size:4.2rem; font-weight:bold; margin-right:auto; padding-left:32px; background:transparent; border:none; white-space:nowrap; font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;">
-                                <input type="text" value="£12.50" style="color:#fff; font-size:4.2rem; font-weight:bold; margin-right:24px; background:transparent; border:none; text-align:right; font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; width:200px;">
+                                <input type="text" value="£12.50" style="color:#fff; font-size:4.2rem; font-weight:bold; margin-right:8px; background:transparent; border:none; text-align:right; font-family:'Circular', 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; width:200px;">
                         </div>
                         <div id="qr-wrapper" style="width:100%; display:flex; justify-content:center; align-items:flex-start; height:33%;">
                             <div id="qr" style="display:flex; justify-content:center; align-items:center;"></div>
@@ -223,9 +223,15 @@ MegaRider</textarea>
                         
                         // Icon toggle control
                         const toggleIconInput = document.getElementById('toggle-icon');
+                        const studentIcon = document.querySelector('#top-info img');
                         toggleIconInput.addEventListener('change', (event) => {
-                            document.querySelector('#top-info img').style.display = event.target.checked ? 'block' : 'none';
+                            studentIcon.style.display = event.target.checked ? 'block' : 'none';
                         });
+                        studentIcon.addEventListener('click', () => {
+                            toggleIconInput.checked = !toggleIconInput.checked;
+                            studentIcon.style.display = toggleIconInput.checked ? 'block' : 'none';
+                        });
+                        studentIcon.style.cursor = 'pointer';
                         let userWord = '';
                         let showTime = true;
                         let crossfadeInterval = 1800; // ms
