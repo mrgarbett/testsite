@@ -9,10 +9,12 @@ self.addEventListener('install', event => {
         './ttfs/CircularStd-Book.ttf',
         './ttfs/CircularStd-Bold.ttf',
         './ttfs/CircularStd-Black.otf',
+        './ttfs/qrcode.min.js',
         './service-worker.js',
-        './sw.js',
-        // Add other assets as needed
-      ]);
+        './sw.js'
+      ]).catch(err => {
+        console.error('Cache install failed:', err);
+      });
     })
   );
   self.skipWaiting();
@@ -30,26 +32,45 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then(response => {
-      // Always serve from cache if available
+      // Cache-first strategy: return cached response if available
       if (response) {
+        // Update cache in background for next time
+        fetch(event.request).then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open('stagecoach-spoof-v1').then(cache => {
+              cache.put(event.request, networkResponse.clone());
+            });
+          }
+        }).catch(() => {
+          // Network fetch failed, but we already have cached response
+        });
         return response;
       }
-      // If not cached, try to fetch and cache it
+      
+      // Not in cache, fetch from network
       return fetch(event.request).then(networkResponse => {
-        // Only cache GET requests and successful responses
-        if (event.request.method === 'GET' && networkResponse && networkResponse.status === 200) {
+        // Cache successful responses
+        if (networkResponse && networkResponse.status === 200) {
           caches.open('stagecoach-spoof-v1').then(cache => {
             cache.put(event.request, networkResponse.clone());
           });
         }
         return networkResponse;
       }).catch(() => {
-        // Optionally, fallback to index.html for navigation requests
+        // Network failed and not in cache
         if (event.request.mode === 'navigate') {
+          // For page navigations, return index.html if available
           return caches.match('./index.html');
         }
+        // For other requests, let the error propagate
+        throw new Error('Network request failed and resource not cached');
       });
     })
   );
