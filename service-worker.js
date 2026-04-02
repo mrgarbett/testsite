@@ -68,9 +68,10 @@ self.addEventListener('fetch', event => {
         if (event.request.mode === 'navigate') {
           // For page navigations, return index.html if available
           return caches.match('./index.html');
+        } else {
+          // For other requests, return empty response to avoid 404
+          return new Response('', { status: 200, statusText: 'OK', headers: { 'Content-Type': 'text/plain' } });
         }
-        // For other requests, let the error propagate
-        throw new Error('Network request failed and resource not cached');
       });
     })
   );
