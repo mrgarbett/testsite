@@ -1,7 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="width=1600, height=2560, initial-scale=1.0, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
+    <meta id="viewport-meta" name="viewport" content="width=1600, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
+    <script>
+        (function() {
+            var screenW = window.screen.width || window.innerWidth || 1600;
+            var initialScale = Math.min(1.0, screenW / 1600);
+            var meta = document.getElementById('viewport-meta');
+            if (meta) {
+                meta.setAttribute('content', 'width=1600, initial-scale=' + initialScale.toFixed(3) + ', minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes');
+            }
+        })();
+    </script>
     <title>Android Webapp Demo</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -23,12 +33,12 @@
         :root {
             --top-info-margin-bottom: 70px;
             --top-info-margin-top: 75px;
-            --card-header-margin-top: 85px;
+            --card-header-margin-top: 42px;
             --card-header-padding-bottom: 32px;
             --banner-margin-top: 30px;
-            --ticket-expiry-margin-top: 40px;
-            --hash-banner-margin-top: 40px;
-            --details-link-margin-top: 40px;
+            --ticket-expiry-margin-top: 55px;
+            --hash-banner-margin-top: 55px;
+            --details-link-margin-top: 53px;
         }
         body {
             margin: 0;
