@@ -1,6 +1,6 @@
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open('stagecoach-spoof-v1').then(cache => {
+    caches.open('stagecoach-spoof-v2').then(cache => {
       return cache.addAll([
         './',
         './index.html',
@@ -24,7 +24,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
-        keys.filter(key => key !== 'stagecoach-spoof-v1').map(key => caches.delete(key))
+        keys.filter(key => key !== 'stagecoach-spoof-v2').map(key => caches.delete(key))
       );
     })
   );
@@ -44,7 +44,7 @@ self.addEventListener('fetch', event => {
         // Update cache in background for next time
         fetch(event.request).then(networkResponse => {
           if (networkResponse && networkResponse.status === 200) {
-            caches.open('stagecoach-spoof-v1').then(cache => {
+            caches.open('stagecoach-spoof-v2').then(cache => {
               cache.put(event.request, networkResponse.clone());
             });
           }
@@ -58,7 +58,7 @@ self.addEventListener('fetch', event => {
       return fetch(event.request).then(networkResponse => {
         // Cache successful responses
         if (networkResponse && networkResponse.status === 200) {
-          caches.open('stagecoach-spoof-v1').then(cache => {
+          caches.open('stagecoach-spoof-v2').then(cache => {
             cache.put(event.request, networkResponse.clone());
           });
         }
